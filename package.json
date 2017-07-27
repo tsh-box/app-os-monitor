@@ -1,0 +1,30 @@
+{
+  "name": "app-os-monitor",
+  "version": "0.1.0",
+  "description": "An app in Node.js to plot the output of the os monitor driver.",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/me-box/app-os-monitor.git"
+  },
+  "keywords": [
+    "template",
+    "app",
+    "nodejs"
+  ],
+  "author": "Tosh Brown <Anthony.Brown@nottingham.ac.uk> ()",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/me-box/app-os-monitor/issues"
+  },
+  "homepage": "https://github.com/me-box/app-os-monitor#readme",
+  "dependencies": {
+    "body-parser": "^1.17.1",
+    "express": "^4.15.2",
+    "node-databox": "^0.5.3",
+    "pug": "^2.0.0-beta11",
+    "ws": "^2.2.1"
+  }
+}
