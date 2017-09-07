@@ -11,11 +11,11 @@ import (
 	databox "github.com/me-box/lib-go-databox"
 )
 
-var dataSourceLoadavg1 = databox.JsonUnmarshal(os.Getenv("DATASOURCE_loadavg1"))
-var dataSourceLoadavg5 = databox.JsonUnmarshal(os.Getenv("DATASOURCE_loadavg5"))
-var dataSourceLoadavg15 = databox.JsonUnmarshal(os.Getenv("DATASOURCE_loadavg15"))
-var dataSourceFreemem = databox.JsonUnmarshal(os.Getenv("DATASOURCE_freemem"))
-var storeURL = databox.GetStoreURLFromDsHref(dataSourceFreemem["href"].(string))
+var dataSourceLoadavg1, _ = databox.JsonUnmarshal(os.Getenv("DATASOURCE_loadavg1"))
+var dataSourceLoadavg5, _ = databox.JsonUnmarshal(os.Getenv("DATASOURCE_loadavg5"))
+var dataSourceLoadavg15, _ = databox.JsonUnmarshal(os.Getenv("DATASOURCE_loadavg15"))
+var dataSourceFreemem, _ = databox.JsonUnmarshal(os.Getenv("DATASOURCE_freemem"))
+var storeURL, _ = databox.GetStoreURLFromDsHref(dataSourceFreemem["href"].(string))
 
 func getStatusEndpoint(w http.ResponseWriter, req *http.Request) {
 	w.Write([]byte("active\n"))
