@@ -62,12 +62,13 @@ func main() {
 			var data reading
 			err := json.Unmarshal(msg, &data)
 			if err != nil {
-				fmt.Println(err)
+				fmt.Println("json.Unmarshal error ", err)
 			} else {
 				latestData[data.DataSourceID] = data.Data
 				if data.DataSourceID == "freemem" {
-					res, expError := databox.ExportLongpoll("https://export.amar.io/", string(msg[:]))
-					fmt.Println(res, expError)
+					jsonString, _ := json.Marshal(string(msg[:]))
+					res, expError := databox.ExportLongpoll("https://export.amar.io/", string(jsonString))
+					fmt.Println("Export result::", res, expError)
 				}
 			}
 		}
