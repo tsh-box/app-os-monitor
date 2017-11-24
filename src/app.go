@@ -12,13 +12,17 @@ import (
 	databox "github.com/toshbrown/lib-go-databox"
 )
 
-var dataSourceLoadavg1, _ = databox.HypercatToDataSourceMetadata(os.Getenv("DATASOURCE_loadavg1"))
-var dataSourceLoadavg5, _ = databox.HypercatToDataSourceMetadata(os.Getenv("DATASOURCE_loadavg5"))
-var dataSourceLoadavg15, _ = databox.HypercatToDataSourceMetadata(os.Getenv("DATASOURCE_loadavg15"))
-var dataSourceFreemem, _ = databox.HypercatToDataSourceMetadata(os.Getenv("DATASOURCE_freemem"))
+type reading struct {
+	DataSourceID string  `json:"datasource_id, string"`
+	Data         float64 `json:"data, int, float"`
+	Timestamp    int64   `json:"timestamp, int"`
+	ID           string  `json:"_id, string"`
+}
 
-//TODO add function to lib-go-databox to extract the store the store endpoint
-var DATABOX_ZMQ_ENDPOINT = "tcp://driver-os-monitor-core-store:5555"
+var dataSourceLoadavg1, _, _ = databox.HypercatToDataSourceMetadata(os.Getenv("DATASOURCE_loadavg1"))
+var dataSourceLoadavg5, _, _ = databox.HypercatToDataSourceMetadata(os.Getenv("DATASOURCE_loadavg5"))
+var dataSourceLoadavg15, _, _ = databox.HypercatToDataSourceMetadata(os.Getenv("DATASOURCE_loadavg15"))
+var dataSourceFreemem, DATABOX_ZMQ_ENDPOINT, _ = databox.HypercatToDataSourceMetadata(os.Getenv("DATASOURCE_freemem"))
 
 func getStatusEndpoint(w http.ResponseWriter, req *http.Request) {
 	w.Write([]byte("active\n"))
@@ -34,13 +38,6 @@ func getDataEndpoint(w http.ResponseWriter, req *http.Request) {
 	w.Write(res)
 }
 
-type reading struct {
-	DataSourceID string  `json:"datasource_id, string"`
-	Data         float64 `json:"data, int, float"`
-	Timestamp    int64   `json:"timestamp, int"`
-	ID           string  `json:"_id, string"`
-}
-
 func main() {
 
 	fmt.Println(DATABOX_ZMQ_ENDPOINT)
@@ -50,7 +47,6 @@ func main() {
 		panic("Cant connect to store: " + err.Error())
 	}
 
-	//TODO Observe seems to timeout
 	load1Chan, _ := tsc.Observe(dataSourceLoadavg1.DataSourceID)
 	load5Chan, _ := tsc.Observe(dataSourceLoadavg5.DataSourceID)
 	load15Chan, _ := tsc.Observe(dataSourceLoadavg15.DataSourceID)
