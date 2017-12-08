@@ -47,7 +47,10 @@ func main() {
 		panic("Cant connect to store: " + err.Error())
 	}
 
-	load1Chan, _ := tsc.Observe(dataSourceLoadavg1.DataSourceID)
+	load1Chan, obsErr := tsc.Observe(dataSourceLoadavg1.DataSourceID)
+	if obsErr != nil {
+		fmt.Println("Error Observing ", dataSourceLoadavg1.DataSourceID)
+	}
 	load5Chan, _ := tsc.Observe(dataSourceLoadavg5.DataSourceID)
 	load15Chan, _ := tsc.Observe(dataSourceLoadavg15.DataSourceID)
 	freememChan, _ := tsc.Observe(dataSourceFreemem.DataSourceID)
