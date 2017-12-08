@@ -3,7 +3,7 @@
 
 	"name": "app-os-monitor",
 	"databox-type": "app",
-	"version": "0.1.0",
+	"version": "0.3.0",
 
 	"description": "An app in golang to plot the output of the os monitor driver.",
 	"author": "Tosh Brown <Anthony.Brown@nottingham.ac.uk>",
@@ -65,7 +65,7 @@
 	"export-whitelist": [
 		{
 		  "url": "https://export.amar.io/",
-		  "description": "Exports the calculated sentiment to amar.io"
+		  "description": "Exports the data to amar.io"
 		}
 	  ],
 

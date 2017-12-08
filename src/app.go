@@ -6,16 +6,23 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gorilla/mux"
-	databox "github.com/me-box/lib-go-databox"
+	databox "github.com/toshbrown/lib-go-databox"
 )
 
-var dataSourceLoadavg1, _ = databox.JsonUnmarshal(os.Getenv("DATASOURCE_loadavg1"))
-var dataSourceLoadavg5, _ = databox.JsonUnmarshal(os.Getenv("DATASOURCE_loadavg5"))
-var dataSourceLoadavg15, _ = databox.JsonUnmarshal(os.Getenv("DATASOURCE_loadavg15"))
-var dataSourceFreemem, _ = databox.JsonUnmarshal(os.Getenv("DATASOURCE_freemem"))
-var storeURL, _ = databox.GetStoreURLFromDsHref(dataSourceFreemem["href"].(string))
+type reading struct {
+	DataSourceID string  `json:"datasource_id, string"`
+	Data         float64 `json:"data, int, float"`
+	Timestamp    int64   `json:"timestamp, int"`
+	ID           string  `json:"_id, string"`
+}
+
+var dataSourceLoadavg1, _, _ = databox.HypercatToDataSourceMetadata(os.Getenv("DATASOURCE_loadavg1"))
+var dataSourceLoadavg5, _, _ = databox.HypercatToDataSourceMetadata(os.Getenv("DATASOURCE_loadavg5"))
+var dataSourceLoadavg15, _, _ = databox.HypercatToDataSourceMetadata(os.Getenv("DATASOURCE_loadavg15"))
+var dataSourceFreemem, DATABOX_ZMQ_ENDPOINT, _ = databox.HypercatToDataSourceMetadata(os.Getenv("DATASOURCE_freemem"))
 
 func getStatusEndpoint(w http.ResponseWriter, req *http.Request) {
 	w.Write([]byte("active\n"))
@@ -31,48 +38,63 @@ func getDataEndpoint(w http.ResponseWriter, req *http.Request) {
 	w.Write(res)
 }
 
-type reading struct {
-	DataSourceID string  `json:"datasource_id, string"`
-	Data         float64 `json:"data, int, float"`
-	Timestamp    int64   `json:"timestamp, int"`
-	ID           string  `json:"_id, string"`
-}
-
 func main() {
 
-	fmt.Printf(storeURL + "\n")
+	fmt.Println(DATABOX_ZMQ_ENDPOINT)
 
-	databox.WaitForStoreStatus(storeURL)
-
-	dChan, conError := databox.WSConnect(dataSourceLoadavg1["href"].(string))
-	if conError != nil {
-		fmt.Println("WSConnect:: ", conError)
+	tsc, err := databox.NewJSONTimeSeriesClient(DATABOX_ZMQ_ENDPOINT, false)
+	if err != nil {
+		panic("Cant connect to store: " + err.Error())
 	}
 
-	res, err := databox.WSSubscribe(dataSourceLoadavg1["href"].(string), "ts")
-	fmt.Println("WSSubscribe dataSourceLoadavg1", res, err)
-	databox.WSSubscribe(dataSourceLoadavg5["href"].(string), "ts")
-	databox.WSSubscribe(dataSourceLoadavg15["href"].(string), "ts")
-	databox.WSSubscribe(dataSourceFreemem["href"].(string), "ts")
+	load1Chan, _ := tsc.Observe(dataSourceLoadavg1.DataSourceID)
+	load5Chan, _ := tsc.Observe(dataSourceLoadavg5.DataSourceID)
+	load15Chan, _ := tsc.Observe(dataSourceLoadavg15.DataSourceID)
+	freememChan, _ := tsc.Observe(dataSourceFreemem.DataSourceID)
 
-	go func() {
+	go func(_load1Chan, _load5Chan, _load15Chan, _freememChan <-chan []byte) {
 		for {
-			msg := <-dChan
-			fmt.Println("DATA:: ", string(msg[:]))
-			var data reading
-			err := json.Unmarshal(msg, &data)
-			if err != nil {
-				fmt.Println("json.Unmarshal error ", err)
-			} else {
-				latestData[data.DataSourceID] = data.Data
-				if data.DataSourceID == "freemem" {
+			select {
+			case msg := <-_load1Chan:
+				var data reading
+				err := json.Unmarshal(msg, &data)
+				if err != nil {
+					fmt.Println("json.Unmarshal error ", err)
+				} else {
+					latestData[dataSourceLoadavg1.DataSourceID] = data.Data
+				}
+			case msg := <-_load5Chan:
+				var data reading
+				err := json.Unmarshal(msg, &data)
+				if err != nil {
+					fmt.Println("json.Unmarshal error ", err)
+				} else {
+					latestData[dataSourceLoadavg5.DataSourceID] = data.Data
+				}
+			case msg := <-_load15Chan:
+				var data reading
+				err := json.Unmarshal(msg, &data)
+				if err != nil {
+					fmt.Println("json.Unmarshal error ", err)
+				} else {
+					latestData[dataSourceLoadavg15.DataSourceID] = data.Data
+				}
+			case msg := <-_freememChan:
+				var data reading
+				err := json.Unmarshal(msg, &data)
+				if err != nil {
+					fmt.Println("json.Unmarshal error ", err)
+				} else {
+					latestData[dataSourceFreemem.DataSourceID] = data.Data
 					jsonString, _ := json.Marshal(string(msg[:]))
 					res, expError := databox.ExportLongpoll("https://export.amar.io/", string(jsonString))
 					fmt.Println("Export result::", res, expError)
 				}
+			default:
+				time.Sleep(time.Millisecond * 10)
 			}
 		}
-	}()
+	}(load1Chan, load5Chan, load15Chan, freememChan)
 
 	router := mux.NewRouter()
 
