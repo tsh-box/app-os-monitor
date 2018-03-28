@@ -10,8 +10,6 @@ import (
 
 	"github.com/gorilla/mux"
 	databox "github.com/me-box/lib-go-databox"
-	"gonum.org/v1/plot"
-	"gonum.org/v1/plot/plotter"
 )
 
 //Load historical load average data
