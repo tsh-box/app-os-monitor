@@ -5,7 +5,7 @@ RUN apk update && apk add pkgconfig build-base bash autoconf automake libtool ge
 #COPY . . if you update the libs below build with --no-cache
 RUN go get -u github.com/gorilla/mux
 RUN go get -u golang.org/x/net/websocket
-RUN go get -u github.com/me-box/lib-go-databox
+RUN go get -u github.com/tsh2/lib-go-databox
 RUN go get -u gonum.org/v1/gonum/...
 RUN go get -u gonum.org/v1/plot/...
 COPY . .
