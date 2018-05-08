@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	databox "github.com/me-box/lib-go-databox"
+	databox "github.com/tsh2/lib-go-databox"
 )
 
 //Load historical load average data
