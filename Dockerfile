@@ -10,7 +10,7 @@ RUN go get -u gonum.org/v1/gonum/...
 RUN go get -u gonum.org/v1/plot/...
 COPY . .
 RUN addgroup -S databox && adduser -S -g databox databox
-RUN GGO_ENABLED=0 GOOS=linux go build -a -tags netgo -installsuffix netgo -ldflags '-s -w' -o app /src/*.go
+RUN GGO_ENABLED=0 GOOS=linux go build -a -tags netgo -installsuffix netgo -ldflags '-s -w' -o app /src/app.go
 
 FROM alpine
 COPY --from=gobuild /etc/passwd /etc/passwd

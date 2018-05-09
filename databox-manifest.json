@@ -27,7 +27,7 @@
 			"install": "required",
 			"risks": "None.",
 			"benefits": "You can see the data!",
-			"datastores": [ "loadavg1","loadavg5","loadavg15","freemem","loadavg1Structured","freememStructured" ]
+			"datastores": [ "loadavg1","loadavg5","loadavg15","freemem" ]
 		}
 	],
 	"allowed-combinations":[ ],
@@ -58,20 +58,6 @@
 			"required": true,
 			"name": "freemem",
 			"clientid": "freemem",
-			"granularities": []
-		},
-		{
-			"type": "loadavg1Structured",
-			"required": true,
-			"name": "loadavg1Structured",
-			"clientid": "loadavg1Structured",
-			"granularities": []
-		},
-		{
-			"type": "freememStructured",
-			"required": true,
-			"name": "freememStructured",
-			"clientid": "freememStructured",
 			"granularities": []
 		}
 	],
