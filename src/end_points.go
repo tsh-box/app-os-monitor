@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	databox "github.com/tsh2/lib-go-databox"
+	databox "github.com/tsh-box/lib-go-databox"
 	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
 )
