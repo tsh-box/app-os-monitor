@@ -14,10 +14,10 @@
 		"nodejs"
 	],
 
-	"homepage": "https://github.com/tsh2/app-os-monitor",
+	"homepage": "https://github.com/tsh-box/app-os-monitor",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/tsh2/app-os-monitor"
+		"url": "git+https://github.com/tsh-box/app-os-monitor"
 	},
 
 	"packages": [
